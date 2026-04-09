@@ -1,0 +1,5 @@
+packet_count,byte_size,duration
+10,500,1
+200,5000,10
+12,520,1
+300,7000,12

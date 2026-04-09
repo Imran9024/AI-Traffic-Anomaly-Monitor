@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Traffic Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="live-indicator"></span>Network Traffic Monitor</h1>
+            <p class="subtitle">Real-time Anomaly Detection Dashboard</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">Total Packets Evaluated</div>
+                <div class="stat-value text-blue">{{ total_packets }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Normal Traffic</div>
+                <div class="stat-value text-green">{{ normal_count }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Anomalies Detected</div>
+                <div class="stat-value text-red">{{ anomaly_count }}</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Data Visualization</h2>
+            {% if image_exists %}
+            <img src="{{ url_for('static', filename='visualizations/anomalies.png') }}" class="visualization" alt="Traffic Visualization">
+            {% else %}
+            <p style="color: var(--text-secondary);">No visualization generated yet. Run prediction to generate the plot.</p>
+            {% endif %}
+        </div>
+
+        <div class="content-section">
+            <h2>Recent Traffic Data</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Packet Count</th>
+                            <th>Byte Size</th>
+                            <th>Duration (s)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in recent_data %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ row.packet_count }}</td>
+                            <td>{{ row.byte_size }}</td>
+                            <td>{{ "%.2f"|format(row.duration) }}</td>
+                            <td>
+                                {% if row.is_anomaly %}
+                                <span class="badge badge-anomaly">Anomaly</span>
+                                {% else %}
+                                <span class="badge badge-normal">Normal</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-secondary);">No active data captured yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
